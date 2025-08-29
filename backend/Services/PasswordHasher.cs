@@ -1,9 +1,14 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-
-public static class PasswordHasher
+public interface IPasswordHasher
 {
-    public static string Hash(string password)
+    string Hash(string password);
+    bool Verify(string password, string hashedPassword);
+}
+
+public class PasswordHasher : IPasswordHasher
+{
+    public string Hash(string password)
     {
         byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
         string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
@@ -15,7 +20,7 @@ public static class PasswordHasher
         ));
         return $"{Convert.ToBase64String(salt)}:{hashedPassword}";
     }
-    public static bool Verify(string password, string hashedPassword)
+    public bool Verify(string password, string hashedPassword)
     {
         string[] parts = hashedPassword.Split(":");
         byte[] salt = Convert.FromBase64String(parts[0]);
