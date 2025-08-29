@@ -17,5 +17,13 @@ public class AuthController : ControllerBase
 
         return Ok(result.user?.Email);
     }
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginRequest loginRequest)
+    {
+        (bool success, string message, User? user) result = await _authService.Login(loginRequest);
+        if (!result.success) return BadRequest(result.message);
+
+        return Ok(result.user?.Email);
+    }
     
 }

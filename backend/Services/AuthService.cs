@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 public interface IAuthService
 {
     Task<(bool success, string message, User? user)> Registrate(RegisterRequest registerRequest);
+    Task<(bool success, string message, User? user)> Login(LoginRequest loginRequest);
 }
 public class AuthService : IAuthService
 {
@@ -32,5 +33,19 @@ public class AuthService : IAuthService
         await _db.SaveChangesAsync();
 
         return (true, "Registered succesfully!", user);
+    }
+    public async Task<(bool success, string message, User? user)> Login(LoginRequest loginRequest)
+    {
+
+        User user = await _db.Users.FirstOrDefaultAsync(u=> u.Email == loginRequest.Email);
+
+        if (user == null)
+            return (false, "No such email found", null);
+
+        if (!_hasher.Verify(loginRequest.Password, user.HashedPassword))
+            return (false, "Wrong credentials", null);
+
+        return (true, "Succesfull login!", user);
+
     }
 }
