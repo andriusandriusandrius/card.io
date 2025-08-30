@@ -20,7 +20,8 @@ namespace backend.Data
             modelBuilder.Entity<Folder>()
                 .HasMany(f => f.Words)
                 .WithOne(w => w.Folder)
-                .HasForeignKey(w => w.FolderId);
+                .HasForeignKey(w => w.FolderId)
+                .OnDelete(DeleteBehavior.Cascade);
                 
             base.OnModelCreating(modelBuilder);
         }
