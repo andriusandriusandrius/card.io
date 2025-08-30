@@ -4,11 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 using LibreTranslate.Client.Net;
 using LibreTranslate.Client.Net.Models;
+using backend.DTO;
 public interface IWordService
 {
-    Task<(bool success, string message, Word? word)> Add(Guid folderId, string wordText);
-    Task<string> Translate(Folder folder, Guid wordId);
-    Task<(bool success, string message)> Remove(Guid folderId, Guid wordId);
+    Task<(bool success, string message, Word? word)> Add(NewWordRequest newWordRequest);
+    Task<string> Translate(Folder folder, string wordText);
+    Task<(bool success, string message)> Remove(RemoveWordRequest removeWordRequest);
 }
 public class WordService
 {
@@ -18,19 +19,19 @@ public class WordService
     {
         _db = db;
     }
-    public async Task<(bool success, string message, Word? word)> Add(Guid folderId, string wordText)
+    public async Task<(bool success, string message, Word? word)> Add(NewWordRequest newWordRequest)
     {
         try
         {
-            Folder folder = await _db.Folders.FirstOrDefaultAsync(f => f.Id == folderId);
+            Folder folder = await _db.Folders.FirstOrDefaultAsync(f => f.Id == newWordRequest.FolderId);
             if (folder == null)
                 return (false, "No such folder", null);
             Word word = new()
             {
-                WordText = wordText,
-                FolderId = folderId,
+                WordText = newWordRequest.WordText,
+                FolderId = newWordRequest.FolderId,
                 Folder = folder,
-                TranslatedWordText = await Translate(folder, wordText)
+                TranslatedWordText = await Translate(folder, newWordRequest.WordText)
             };
             _db.Words.Add(word);
             await _db.SaveChangesAsync();
@@ -58,11 +59,11 @@ public class WordService
             return wordText;
         }
     }
-    public async Task<(bool success, string message)> Remove(Guid folderId, Guid wordId)
+    public async Task<(bool success, string message)> Remove(RemoveWordRequest removeWordRequest)
     {
         try
         {
-            Word word = await _db.Words.FirstOrDefaultAsync(w => w.FolderId == folderId && w.Id == wordId);
+            Word word = await _db.Words.FirstOrDefaultAsync(w => w.FolderId == removeWordRequest.FolderId && w.Id == removeWordRequest.WordId);
             if (word == null)
                 return (false, "There is no such word in the specified folder");
 
