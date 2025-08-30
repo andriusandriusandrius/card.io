@@ -11,7 +11,7 @@ public interface IWordService
     Task<string> Translate(Folder folder, string wordText);
     Task<(bool success, string message)> Remove(RemoveWordRequest removeWordRequest);
 }
-public class WordService
+public class WordService : IWordService
 {
     private readonly CardioContext _db;
 
@@ -52,7 +52,7 @@ public class WordService
 
             var result = await client.TranslateAsync(wordText, folder.Language, "en");
 
-            return result.ToString() ?? wordText;
+            return result.Value?.TranslatedText ?? wordText;
         }
         catch
         {

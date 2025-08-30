@@ -4,13 +4,13 @@ namespace backend.DTO
 {
     public class NewWordRequest
     {
-        public Guid FolderId;
-        public string? WordText;
+        public Guid FolderId { set; get; }
+        public string? WordText { set; get; }
     }
     public class RemoveWordRequest
     {
-        public Guid FolderId;
-        public Guid WordId;
+        public Guid FolderId { set; get; }
+        public Guid WordId { set; get; }
         
     }
 }

@@ -34,8 +34,8 @@ public class WordController : ControllerBase
         if (!result.success)
             return BadRequest(new {result.message });
 
-        return Ok(new {  result.message });
+        return Ok(new { result.message });
     }
-
+    
 
 }
