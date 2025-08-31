@@ -15,10 +15,10 @@ public class WordController : ControllerBase
     public async Task<IActionResult> Add([FromBody] NewWordRequest newWordRequest)
     {
         var result = await _wordService.Add(newWordRequest);
-        if (!result.success)
-            return BadRequest(new { result.message });
+        if (!result.Success)
+            return BadRequest(result);
 
-        return Ok(new { result.message, result.word });
+        return Ok(result);
     }
     [HttpDelete("{folderId}/{wordId}")]
     public async Task<IActionResult> Remove(Guid folderId, Guid wordId)
@@ -31,10 +31,10 @@ public class WordController : ControllerBase
 
         var result = await _wordService.Remove(removeWordRequest);
 
-        if (!result.success)
-            return BadRequest(new {result.message });
+        if (!result.Success)
+            return BadRequest(result);
 
-        return Ok(new { result.message });
+        return Ok(result);
     }
     
 

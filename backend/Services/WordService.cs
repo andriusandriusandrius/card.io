@@ -3,13 +3,13 @@ using backend.Models;
 using Microsoft.EntityFrameworkCore;
 
 using LibreTranslate.Client.Net;
-using LibreTranslate.Client.Net.Models;
 using backend.DTO;
+using backend.DTOs;
 public interface IWordService
 {
-    Task<(bool success, string message, Word? word)> Add(NewWordRequest newWordRequest);
+    Task<ApiResponse<Word>> Add(NewWordRequest newWordRequest);
     Task<string> Translate(Folder folder, string wordText);
-    Task<(bool success, string message)> Remove(RemoveWordRequest removeWordRequest);
+    Task<ApiResponse<Word>> Remove(RemoveWordRequest removeWordRequest);
 }
 public class WordService : IWordService
 {
@@ -19,13 +19,13 @@ public class WordService : IWordService
     {
         _db = db;
     }
-    public async Task<(bool success, string message, Word? word)> Add(NewWordRequest newWordRequest)
+    public async Task<ApiResponse<Word>> Add(NewWordRequest newWordRequest)
     {
         try
         {
             Folder folder = await _db.Folders.FirstOrDefaultAsync(f => f.Id == newWordRequest.FolderId);
             if (folder == null)
-                return (false, "No such folder", null);
+                return new ApiResponse<Word> { Success = false, Message = "No such folder", Data = null };
             Word word = new()
             {
                 WordText = newWordRequest.WordText,
@@ -36,11 +36,11 @@ public class WordService : IWordService
             _db.Words.Add(word);
             await _db.SaveChangesAsync();
 
-            return (true, $"Success! Added word {word.WordText}", word);
+            return new ApiResponse<Word> { Success = true, Message = $"Success! Added word {word.WordText}", Data = word };
         }
         catch (Exception ex)
         {
-            return (false, $"Failed to add word: {ex.Message}", null);
+            return new ApiResponse<Word>{Success=false, Message =$"Failed to add word: {ex.Message}", Data = null};
         }
     }
     public async Task<string> Translate(Folder folder, string wordText)
@@ -59,21 +59,21 @@ public class WordService : IWordService
             return wordText;
         }
     }
-    public async Task<(bool success, string message)> Remove(RemoveWordRequest removeWordRequest)
+    public async Task<ApiResponse<Word>> Remove(RemoveWordRequest removeWordRequest)
     {
         try
         {
             Word word = await _db.Words.FirstOrDefaultAsync(w => w.FolderId == removeWordRequest.FolderId && w.Id == removeWordRequest.WordId);
             if (word == null)
-                return (false, "There is no such word in the specified folder");
+                return new ApiResponse<Word> { Success = false, Message = "There is no such word in the specified folder", Data = null };
 
             _db.Words.Remove(word);
             await _db.SaveChangesAsync();
-            return (true, $"Success! Word removed!");
+            return new ApiResponse<Word> { Success = true, Message = $"Success! Word removed!", Data = null };
         }
         catch (Exception ex)
         {
-            return (false, $"Failed to remove word: {ex.Message}");
+            return new ApiResponse<Word>{Success = false, Message =$"Failed to remove word: {ex.Message}", Data = null};
         }
     }
 }

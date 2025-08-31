@@ -1,3 +1,5 @@
+using backend.Models;
+
 namespace backend.DTO
 {
     public class NewFolderRequest
@@ -17,6 +19,7 @@ namespace backend.DTO
     {
         public Guid FolderId { set; get; }
         public Guid UserId { set; get; }
-        public string? newFolderName { set; get; }
+        public string? NewFolderName { set; get; }
     }
+    
 }
