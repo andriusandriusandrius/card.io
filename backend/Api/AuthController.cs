@@ -13,18 +13,18 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
-        (bool success, string message, User? user) result = await _authService.Registrate(registerRequest);
-        if (!result.success) return BadRequest(result.message);
+        var result = await _authService.Registrate(registerRequest);
+        if (!result.Success) return BadRequest(result.Message);
 
-        return Ok(result.user?.Email);
+        return Ok(result);
     }
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest loginRequest)
     {
-        (bool success, string message, User? user) result = await _authService.Login(loginRequest);
-        if (!result.success) return BadRequest(result.message);
+        var result = await _authService.Login(loginRequest);
+        if (!result.Success) return BadRequest(result.Message);
 
-        return Ok(result.user?.Email);
+        return Ok(result);
     }
     
 }
