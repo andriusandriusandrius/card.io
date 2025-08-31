@@ -7,17 +7,19 @@ using Microsoft.EntityFrameworkCore;
 public interface IAuthService
 {
     Task<(bool success, string message, User? user)> Registrate(RegisterRequest registerRequest);
-    Task<(bool success, string message, User? user)> Login(LoginRequest loginRequest);
+    Task<ApiResponse<string>> Login(LoginRequest loginRequest);
 }
 public class AuthService : IAuthService
 {
     private readonly CardioContext _db;
     private readonly IPasswordHasher _hasher;
+    private readonly IJwtProvider _jwtProvider;
 
-    public AuthService(CardioContext db, IPasswordHasher hasher)
+    public AuthService(CardioContext db, IPasswordHasher hasher, IJwtProvider jwtProvider)
     {
         _db = db;
         _hasher = hasher;
+        _jwtProvider = jwtProvider;
     }
     public async Task<(bool success, string message, User? user)> Registrate(RegisterRequest registerRequest)
     {
@@ -34,18 +36,19 @@ public class AuthService : IAuthService
 
         return (true, "Registered succesfully!", user);
     }
-    public async Task<(bool success, string message, User? user)> Login(LoginRequest loginRequest)
+    public async Task<ApiResponse<string>> Login(LoginRequest loginRequest)
     {
 
         User user = await _db.Users.FirstOrDefaultAsync(u=> u.Email == loginRequest.Email);
 
         if (user == null)
-            return (false, "No such email found", null);
+            return new ApiResponse<string> { Success=false, Message="No such email found", Data=null };
 
         if (!_hasher.Verify(loginRequest.Password, user.HashedPassword))
-            return (false, "Wrong credentials", null);
+            return new ApiResponse<string> {Success=false, Message="Wrong credentials", Data=null };
 
-        return (true, "Succesfull login!", user);
+        string token = _jwtProvider.GenerateToken(user);
+        return new ApiResponse<string> { Success=true, Message="Login succesful!", Data=token};
 
     }
 }
