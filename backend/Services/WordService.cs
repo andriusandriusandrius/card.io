@@ -47,7 +47,7 @@ public class WordService : IWordService
     {
         try
         {
-            var options = new LibreTranslateClientOptions("https://libretranslate.com", null);
+            var options = new LibreTranslateClientOptions("http://localhost:5000", null);
             using var client = new LibreTranslateClient(options, null);
 
             var result = await client.TranslateAsync(wordText, folder.Language, "en");
