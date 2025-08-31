@@ -16,10 +16,10 @@ public class FolderController : ControllerBase
     public async Task<IActionResult> AddFolder([FromBody] NewFolderRequest newFolderRequest)
     {
         var result = await _folderService.Add(newFolderRequest);
-        if (!result.success)
-            return BadRequest(new {result.message });
+        if (!result.Success)
+            return BadRequest(result);
 
-        return Ok(new {result.message,result.folder });
+        return Ok(result);
 
 
     }
@@ -34,20 +34,20 @@ public class FolderController : ControllerBase
 
         var result = await _folderService.Remove(removeFolderRequest);
 
-        if (!result.success)
-            return BadRequest(new {result.message });
+        if (!result.Success)
+            return BadRequest(result);
 
-        return Ok(new {  result.message });
+        return Ok(result);
     }
     [HttpPut("{folderId}")]
     public async Task<IActionResult> RenameFolder(Guid folderId, [FromBody] RenameFolderRequest renameFolderRequest)
     {
         renameFolderRequest.FolderId = folderId;
         var result = await _folderService.Rename(renameFolderRequest);
-         if (!result.success)
-            return BadRequest(new { result.message });
+         if (!result.Success)
+            return BadRequest(result);
 
-        return Ok(new {result.message });
+        return Ok(result);
     }
     
 }
