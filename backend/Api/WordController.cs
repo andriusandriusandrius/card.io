@@ -1,8 +1,10 @@
 using backend.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class WordController : ControllerBase
 {
     private readonly IWordService _wordService;

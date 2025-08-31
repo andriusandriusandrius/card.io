@@ -1,3 +1,5 @@
+using Microsoft.Net.Http.Headers;
+
 namespace backend.DTOs
 {
     public class RegisterRequest
@@ -9,11 +11,5 @@ namespace backend.DTOs
     {
         public string? Email { set; get; }
         public string? Password { set; get; }
-    }
-    public class AuthResponse
-    {
-        public string? Token { set; get; }
-        public Guid UserId { set; get; }
-        public string? Email { set; get; }
     }
 }

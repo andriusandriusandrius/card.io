@@ -1,10 +1,9 @@
-using System.Linq.Expressions;
 using backend.DTO;
-using backend.DTOs;
-using backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class FolderController : ControllerBase
 {
     private readonly IFolderService _folderService;
@@ -23,9 +22,14 @@ public class FolderController : ControllerBase
 
 
     }
-    [HttpDelete("{userId}/{folderId}")] // will change the link (remove userId) here once JWT token authenthication will be done
-    public async Task<IActionResult> RemoveFolder(Guid userId, Guid folderId)
+    [HttpDelete("{folderId}")]
+    public async Task<IActionResult> RemoveFolder( Guid folderId)
     {
+         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+         if (userIdClaim == null)
+            return Unauthorized("Invalid token");
+
+         Guid userId = Guid.Parse(userIdClaim.Value);
         RemoveFolderRequest removeFolderRequest = new()
         {
             FolderId = folderId,
