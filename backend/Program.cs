@@ -37,6 +37,7 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFolderService, FolderService>();
 builder.Services.AddScoped<IWordService, WordService>();
+builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
 builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
 {
